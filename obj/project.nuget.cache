@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "WkdshTNQpzQ=",
+  "success": true,
+  "projectFilePath": "F:\\facebookauto\\FacebookAutoPoster\\FacebookAutoPoster.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\emc_x\\.nuget\\packages\\csvhelper\\33.0.1\\csvhelper.33.0.1.nupkg.sha512",
+    "C:\\Users\\emc_x\\.nuget\\packages\\selenium.webdriver\\4.32.0\\selenium.webdriver.4.32.0.nupkg.sha512"
+  ],
+  "logs": []
+}
