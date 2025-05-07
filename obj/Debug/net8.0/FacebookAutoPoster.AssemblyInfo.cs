@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FacebookAutoPoster")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+00bf866c5a10f758c8791afc211c903687f58802")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9da0868b6c2852db753a912347f2189d3754f39d")]
 [assembly: System.Reflection.AssemblyProductAttribute("FacebookAutoPoster")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FacebookAutoPoster")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

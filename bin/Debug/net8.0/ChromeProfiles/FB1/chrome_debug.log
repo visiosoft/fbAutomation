@@ -1,38 +1,27 @@
-[15168:12880:0507/122033.588:INFO:chrome_browser_cloud_management_controller.cc(202)] No machine level policy manager exists.
-[16952:15452:0507/122033.731:INFO:cpu_info.cc(53)] Available number of cores: 12
-[6564:11100:0507/122033.731:INFO:cpu_info.cc(53)] Available number of cores: 12
-[20768:20388:0507/122034.047:INFO:cpu_info.cc(53)] Available number of cores: 12
-[6496:16640:0507/122034.448:INFO:cpu_info.cc(53)] Available number of cores: 12
-[19864:11784:0507/122034.456:INFO:cpu_info.cc(53)] Available number of cores: 12
-[19796:20320:0507/122034.679:VERBOSE1:viz_main_impl.cc(85)] VizNullHypothesis is disabled (not a warning)
-[13824:10948:0507/122035.145:INFO:cpu_info.cc(53)] Available number of cores: 12
-[21276:20544:0507/122035.471:INFO:cpu_info.cc(53)] Available number of cores: 12
-[15168:12880:0507/122036.143:INFO:CONSOLE(250)] "
+[14392:16516:0507/122608.214:INFO:chrome_browser_cloud_management_controller.cc(202)] No machine level policy manager exists.
+[8328:21472:0507/122608.379:INFO:cpu_info.cc(53)] Available number of cores: 12
+[5916:14188:0507/122608.379:INFO:cpu_info.cc(53)] Available number of cores: 12
+[16944:6228:0507/122608.693:INFO:cpu_info.cc(53)] Available number of cores: 12
+[21308:10752:0507/122609.145:INFO:cpu_info.cc(53)] Available number of cores: 12
+[20948:8808:0507/122609.326:VERBOSE1:viz_main_impl.cc(85)] VizNullHypothesis is disabled (not a warning)
+[5272:15128:0507/122609.825:INFO:cpu_info.cc(53)] Available number of cores: 12
+[21204:13568:0507/122610.169:INFO:cpu_info.cc(53)] Available number of cores: 12
+[14392:16516:0507/122611.034:INFO:CONSOLE(250)] "
 %cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122036.143:INFO:CONSOLE(250)] "
+[14392:16516:0507/122611.034:INFO:CONSOLE(250)] "
 %cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122036.143:INFO:CONSOLE(250)] "
+[14392:16516:0507/122611.034:INFO:CONSOLE(250)] "
 %cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122036.143:INFO:CONSOLE(250)] "
+[14392:16516:0507/122611.034:INFO:CONSOLE(250)] "
 %c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122040.170:INFO:CONSOLE(546)] "Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently", source: https://static.xx.fbcdn.net/rsrc.php/v4iXzY4/yX/l/en_US-j/HKIJ1ZDgQEW0n3zeDi1c9u-rqu1Ks615cDIGdwCNUrw-rnz2NQN3f6G-lwzBlyYCAKCkwYmKfeDld8lp8rg74KKzoxA85bMNRbt95sPz6VrXoNcACseWJfpsEFaJbJ30OUmA59YdKQZZi-xDt5W3Jmnz2O-HKZgsmKfjZdH0WlMCEAztTwm_mYYhN3p-a0ix8lg7EwJ4z1mBNu_rAMb95V05p_3sVw6vUNgoGVj5BXNtv_KlwyA8jBvXS1MYoags6LRXbXx5fKDXAUB2jwKaFfmUsBVDG47XfsBdS5ilmLm3AQjAmbrjis8IMpR4Ica.js?_nc_eui2=AeFRsNsTLTPrFVlGmGINT3lvgT9RUAzErvCBP1FQDMSu8AbosrzDDNvWqS8Uv-SbAP1D1oJ0Ss4hvpfDDwBGU7pF (546)
-[15168:12880:0507/122040.343:INFO:CONSOLE(250)] "
+[14392:16516:0507/122615.216:INFO:CONSOLE(250)] "
 %cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122040.343:INFO:CONSOLE(250)] "
+[14392:16516:0507/122615.216:INFO:CONSOLE(250)] "
 %cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122040.343:INFO:CONSOLE(250)] "
+[14392:16516:0507/122615.216:INFO:CONSOLE(250)] "
 %cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122040.343:INFO:CONSOLE(250)] "
+[14392:16516:0507/122615.216:INFO:CONSOLE(250)] "
 %c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (250)
-[15168:12880:0507/122041.784:INFO:CONSOLE(77)] "ErrorUtils caught an error:
-
-Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
-
-Subsequent non-fatal errors won't be logged; see https://fburl.com/debugjs. [object Object]", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js?_nc_eui2=AeFqH9OIb7LmAaHY2Himlq0yHSxwQutKgModLHBC60qAyoG19uYfAVeQTaPDrVQAC-NktwLnK11eSr1i-VsyAB6j (77)
-[15168:12880:0507/122041.785:INFO:CONSOLE(942)] "Uncaught Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.", source: https://static.xx.fbcdn.net/rsrc.php/v4ijck4/y0/l/en_US-j/8dMv7eo1OjI_6LcHAZH3CAk7ChQ4FL4_CnjSa8xRI3tT6mOv4KpX0vnmMOGcR3beONldYssdr09Lzt9yaIGIymd3hxGaZdeEF2E75udmNXzePQADItFIutrOfqo4sFSirE9U4xwG5cRWKjyRUwtkff5QjV_5JazcBmI9IZmJpJ-svI0bBDH4LfMzlTFTS0IFwFbgUyUFKQkBNz1-jO11ll83jsKpXouiE0FOKR5K9TfSdiwM3K.js?_nc_eui2=AeGRi-Zcbnmw455MS7w2ixQ9ybMMC3wkaYbJswwLfCRphh4_Nmkx9g0b-VGi3P8l_FXUl_lQGPb2nVt4T4IGS5gp (942)
-[15168:12880:0507/122042.016:INFO:CONSOLE(942)] "Uncaught Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.", source: https://static.xx.fbcdn.net/rsrc.php/v4ijck4/y0/l/en_US-j/8dMv7eo1OjI_6LcHAZH3CAk7ChQ4FL4_CnjSa8xRI3tT6mOv4KpX0vnmMOGcR3beONldYssdr09Lzt9yaIGIymd3hxGaZdeEF2E75udmNXzePQADItFIutrOfqo4sFSirE9U4xwG5cRWKjyRUwtkff5QjV_5JazcBmI9IZmJpJ-svI0bBDH4LfMzlTFTS0IFwFbgUyUFKQkBNz1-jO11ll83jsKpXouiE0FOKR5K9TfSdiwM3K.js?_nc_eui2=AeGRi-Zcbnmw455MS7w2ixQ9ybMMC3wkaYbJswwLfCRphh4_Nmkx9g0b-VGi3P8l_FXUl_lQGPb2nVt4T4IGS5gp (942)
-[15168:12880:0507/122132.990:INFO:CONSOLE(0)] "ResizeObserver loop completed with undelivered notifications.", source: https://www.facebook.com/groups/302267195277390 (0)
-[19796:20320:0507/122153.644:ERROR:gles2_cmd_decoder_passthrough.cc(1081)] [GroupMarkerNotSet(crbug.com/242999)!:A0F0310074630000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
-[15168:12880:0507/122153.653:INFO:CONSOLE(0)] "[GroupMarkerNotSet(crbug.com/242999)!:A0F0310074630000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.", source: https://www.facebook.com/groups/302267195277390 (0)
-[19564:18660:0507/122203.326:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
-[19564:18660:0507/122203.326:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
+[14392:16516:0507/122622.074:INFO:CONSOLE(9)] "Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently", source: https://static.xx.fbcdn.net/rsrc.php/v4ik9_4/yS/l/en_US-j/FaJbJ30OUmA.js?_nc_eui2=AeHWZkhY4YvLE6wl_VW--wnGqe_Lc4RyOeyp78tzhHI57DXYgQxbsRq0GbJWq2HqGNMGOeQKmg0MYuz13qCdhByR (9)
+[2984:15100:0507/122655.009:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
+[2984:15100:0507/122655.009:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.

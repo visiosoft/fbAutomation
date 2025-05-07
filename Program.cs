@@ -230,6 +230,57 @@ namespace FacebookAutoPoster
                     Console.WriteLine($"Waiting {Delays.GroupLoadDelay/1000} seconds for group to load...");
                     await Task.Delay(Delays.GroupLoadDelay);
 
+                    // Simulate human-like scrolling and interaction
+                    Console.WriteLine("Simulating human-like behavior...");
+                    try
+                    {
+                        // Random initial scroll
+                        var scrollRandom = new Random();
+                        var scrollAmount = scrollRandom.Next(300, 800);
+                        ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, {scrollAmount});");
+                        await RandomDelay(1000, 2000);
+
+                        // Scroll up a bit
+                        scrollAmount = scrollRandom.Next(100, 300);
+                        ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, -{scrollAmount});");
+                        await RandomDelay(800, 1500);
+
+                        // Random mouse movements
+                        var elements = driver.FindElements(By.CssSelector("div[role='article']"));
+                        if (elements.Count > 0)
+                        {
+                            // Move to a random post
+                            var randomPost = elements[scrollRandom.Next(0, Math.Min(3, elements.Count))];
+                            actions.MoveToElement(randomPost).Perform();
+                            await RandomDelay(500, 1000);
+
+                            // Move away
+                            actions.MoveByOffset(scrollRandom.Next(-100, 100), scrollRandom.Next(-100, 100)).Perform();
+                            await RandomDelay(500, 1000);
+                        }
+
+                        // Scroll to top
+                        ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, 0);");
+                        await RandomDelay(1000, 2000);
+
+                        // Find and scroll to post creation area
+                        var postAreaElement = wait.Until(d => d.FindElement(By.XPath("//span[contains(text(), 'Write something...')]")));
+                        if (postAreaElement != null)
+                        {
+                            // Scroll to post area with smooth behavior
+                            ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", postAreaElement);
+                            await RandomDelay(1500, 2500);
+
+                            // Move mouse to post area with slight offset
+                            actions.MoveToElement(postAreaElement, scrollRandom.Next(-10, 10), scrollRandom.Next(-10, 10)).Perform();
+                            await RandomDelay(800, 1500);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error during human-like behavior simulation: {ex.Message}");
+                    }
+
                     // Try multiple approaches to find the post creation area
                     Console.WriteLine("Looking for post creation area...");
                     IWebElement postArea = null;
