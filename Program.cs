@@ -12,9 +12,31 @@ using FacebookAutoPoster.Models;
 using System.Threading;
 using System.Linq;
 using OpenQA.Selenium.Support.Extensions;
+using System.Net.Http;
+using System.Net;
 
 namespace FacebookAutoPoster
 {
+    // Proxy configuration class
+    public class ProxyConfig
+    {
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public bool IsValid { get; set; }
+        public DateTime LastUsed { get; set; }
+        public int FailCount { get; set; }
+        public string AssociatedAccount { get; set; }
+
+        public string ToProxyString()
+        {
+            if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
+                return $"{Host}:{Port}";
+            return $"{Username}:{Password}@{Host}:{Port}";
+        }
+    }
+
     class Program
     {
         // Delay settings (in milliseconds)
@@ -38,10 +60,25 @@ namespace FacebookAutoPoster
             public static readonly int PostCompleteDelay = 5000; // 5 seconds
         }
 
+        // Proxy rotation settings
+        private static class ProxySettings
+        {
+            public static readonly int MaxFailures = 3;
+            public static readonly int ProxyTimeout = 30; // seconds
+            public static readonly int ValidationTimeout = 10; // seconds
+        }
+
+        private static Dictionary<string, ProxyConfig> _accountProxies = new Dictionary<string, ProxyConfig>();
+        private static int _postCount = 0;
+        private static readonly object _proxyLock = new object();
+
         static async Task Main(string[] args)
         {
             try
             {
+                // Load proxies from file
+                LoadProxies();
+
                 var config = new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture)
                 {
                     HasHeaderRecord = true,
@@ -89,9 +126,133 @@ namespace FacebookAutoPoster
             }
         }
 
+        static void LoadProxies()
+        {
+            try
+            {
+                if (File.Exists("proxies.txt"))
+                {
+                    var lines = File.ReadAllLines("proxies.txt");
+                    foreach (var line in lines)
+                    {
+                        if (line.Trim().StartsWith("#") || string.IsNullOrWhiteSpace(line))
+                            continue;
+
+                        var parts = line.Split(':');
+                        if (parts.Length >= 3) // Now expecting format: account:host:port or account:host:port:username:password
+                        {
+                            var account = parts[0];
+                            var proxy = new ProxyConfig
+                            {
+                                Host = parts[1],
+                                Port = int.Parse(parts[2]),
+                                IsValid = true,
+                                LastUsed = DateTime.MinValue,
+                                FailCount = 0,
+                                AssociatedAccount = account
+                            };
+
+                            // If username and password are provided
+                            if (parts.Length >= 5)
+                            {
+                                proxy.Username = parts[3];
+                                proxy.Password = parts[4];
+                            }
+
+                            _accountProxies[account] = proxy;
+                            Console.WriteLine($"Loaded proxy for account: {account}");
+                        }
+                    }
+                    Console.WriteLine($"Loaded {_accountProxies.Count} account-proxy pairs");
+                }
+                else
+                {
+                    Console.WriteLine("No proxies.txt file found. Running without proxies.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading proxies: {ex.Message}");
+            }
+        }
+
+        static async Task<ProxyConfig> GetProxyForAccount(string account)
+        {
+            lock (_proxyLock)
+            {
+                if (_accountProxies.TryGetValue(account, out var proxy))
+                {
+                    if (proxy.IsValid && proxy.FailCount < ProxySettings.MaxFailures)
+                    {
+                        proxy.LastUsed = DateTime.Now;
+                        return proxy;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Warning: No valid proxy found for account {account}");
+                        return null;
+                    }
+                }
+                Console.WriteLine($"Warning: No proxy configured for account {account}");
+                return null;
+            }
+        }
+
+        static async Task<bool> ValidateProxy(ProxyConfig proxy)
+        {
+            try
+            {
+                using (var handler = new HttpClientHandler
+                {
+                    Proxy = new WebProxy(proxy.ToProxyString()),
+                    UseProxy = true,
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                })
+                using (var client = new HttpClient(handler))
+                {
+                    client.Timeout = TimeSpan.FromSeconds(ProxySettings.ValidationTimeout);
+                    var response = await client.GetAsync("https://www.facebook.com");
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static void MarkProxyAsFailed(ProxyConfig proxy)
+        {
+            lock (_proxyLock)
+            {
+                proxy.FailCount++;
+                if (proxy.FailCount >= ProxySettings.MaxFailures)
+                {
+                    proxy.IsValid = false;
+                    Console.WriteLine($"Proxy for account {proxy.AssociatedAccount} ({proxy.Host}:{proxy.Port}) marked as invalid after {proxy.FailCount} failures");
+                }
+            }
+        }
+
         static async Task PostToFacebook(PostData postData)
         {
             var options = new ChromeOptions();
+            
+            // Get proxy for this specific account
+            var proxy = await GetProxyForAccount(postData.ProfileName);
+            if (proxy != null)
+            {
+                Console.WriteLine($"Using proxy for account {postData.ProfileName}: {proxy.Host}:{proxy.Port}");
+                if (await ValidateProxy(proxy))
+                {
+                    options.AddArgument($"--proxy-server={proxy.ToProxyString()}");
+                }
+                else
+                {
+                    Console.WriteLine($"Proxy for account {postData.ProfileName} failed validation");
+                    MarkProxyAsFailed(proxy);
+                }
+            }
             
             // Add user data directory for persistent login using profile name
             var baseProfileDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ChromeProfiles");
@@ -154,6 +315,9 @@ namespace FacebookAutoPoster
             {
                 try
                 {
+                    // Increment post count and rotate proxy if needed
+                    _postCount++;
+
                     // Enhanced JavaScript to prevent detection
                     ((IJavaScriptExecutor)driver).ExecuteScript(@"
                         Object.defineProperty(navigator, 'webdriver', {
@@ -538,6 +702,10 @@ namespace FacebookAutoPoster
                 }
                 catch (Exception ex)
                 {
+                    if (proxy != null)
+                    {
+                        MarkProxyAsFailed(proxy);
+                    }
                     Console.WriteLine($"Error during posting: {ex.Message}");
                     Console.WriteLine($"Stack trace: {ex.StackTrace}");
                     driver.Quit();
