@@ -19,3 +19,6 @@ F:\facebookauto\FacebookAutoPoster\obj\Debug\net8.0\refint\FacebookAutoPoster.dl
 F:\facebookauto\FacebookAutoPoster\obj\Debug\net8.0\FacebookAutoPoster.pdb
 F:\facebookauto\FacebookAutoPoster\obj\Debug\net8.0\FacebookAutoPoster.genruntimeconfig.cache
 F:\facebookauto\FacebookAutoPoster\obj\Debug\net8.0\ref\FacebookAutoPoster.dll
+F:\facebookauto\FacebookAutoPoster\obj\Debug\net8.0\FacebookAutoPoster.sourcelink.json
+F:\facebookauto\FacebookAutoPoster\bin\Debug\net8.0\WebDriver.Support.dll
+F:\facebookauto\FacebookAutoPoster\bin\Debug\net8.0\Selenium.WebDriver.Extensions.dll

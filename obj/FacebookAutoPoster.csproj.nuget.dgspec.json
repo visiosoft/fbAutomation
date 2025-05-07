@@ -50,6 +50,10 @@
             "Selenium.WebDriver": {
               "target": "Package",
               "version": "[4.32.0, )"
+            },
+            "Selenium.WebDriver.Extensions": {
+              "target": "Package",
+              "version": "[4.1.0, )"
             }
           },
           "imports": [

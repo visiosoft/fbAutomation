@@ -1,0 +1,3 @@
+F:\facebookauto\FacebookAutoPoster\bin\Release\net8.0\win-x64\publish\FacebookAutoPoster.pdb
+F:\facebookauto\FacebookAutoPoster\bin\Release\net8.0\win-x64\publish\selenium-manager\macos\selenium-manager
+F:\facebookauto\FacebookAutoPoster\bin\Release\net8.0\win-x64\publish\FacebookAutoPoster.exe

@@ -11,11 +11,33 @@ using OpenQA.Selenium.Support.UI;
 using FacebookAutoPoster.Models;
 using System.Threading;
 using System.Linq;
+using OpenQA.Selenium.Support.Extensions;
 
 namespace FacebookAutoPoster
 {
     class Program
     {
+        // Delay settings (in milliseconds)
+        private static class Delays
+        {
+            public static readonly int BetweenPostsMin = 10000;  // 10 seconds
+            public static readonly int BetweenPostsMax = 20000;  // 20 seconds
+            public static readonly int InitialDelayMin = 1000;   // 1 second
+            public static readonly int InitialDelayMax = 2000;   // 2 seconds
+            public static readonly int LoginDelayMin = 500;      // 0.5 seconds
+            public static readonly int LoginDelayMax = 1000;     // 1 second
+            public static readonly int PostLoginDelay = 5000;    // 5 seconds
+            public static readonly int GroupLoadDelay = 5000;    // 5 seconds
+            public static readonly int ClickDelayMin = 1000;     // 1 second
+            public static readonly int ClickDelayMax = 2000;     // 2 seconds
+            public static readonly int PostAreaDelay = 2000;     // 2 seconds
+            public static readonly int TypeDelayMin = 20;        // 20ms
+            public static readonly int TypeDelayMax = 50;        // 50ms
+            public static readonly int ThinkingDelayMin = 200;   // 200ms
+            public static readonly int ThinkingDelayMax = 500;   // 500ms
+            public static readonly int PostCompleteDelay = 5000; // 5 seconds
+        }
+
         static async Task Main(string[] args)
         {
             try
@@ -23,6 +45,9 @@ namespace FacebookAutoPoster
                 var config = new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture)
                 {
                     HasHeaderRecord = true,
+                    MissingFieldFound = null,  // Ignore missing fields
+                    HeaderValidated = null,    // Don't validate headers
+                    PrepareHeaderForMatch = args => args.Header.ToLower() // Case-insensitive header matching
                 };
 
                 using (var reader = new StreamReader("posts.csv"))
@@ -31,11 +56,28 @@ namespace FacebookAutoPoster
                     var records = csv.GetRecords<PostData>();
                     foreach (var record in records)
                     {
+                        if (string.IsNullOrWhiteSpace(record.GroupUrl))
+                        {
+                            Console.WriteLine("Skipping record with empty group URL");
+                            continue;
+                        }
+
+                        // Sanitize profile name for directory creation
+                        if (!string.IsNullOrWhiteSpace(record.ProfileName))
+                        {
+                            record.ProfileName = string.Join("_", record.ProfileName.Split(Path.GetInvalidFileNameChars()));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Skipping record with empty profile name");
+                            continue;
+                        }
+
                         Console.WriteLine($"\nProcessing post for group: {record.GroupUrl}");
                         await PostToFacebook(record);
                         // Add random delay between posts to avoid detection
                         var random = new Random();
-                        var delay = random.Next(30000, 60000); // Random delay between 30-60 seconds
+                        var delay = random.Next(Delays.BetweenPostsMin, Delays.BetweenPostsMax); // Random delay between 10-20 seconds
                         await Task.Delay(delay);
                     }
                 }
@@ -138,7 +180,8 @@ namespace FacebookAutoPoster
                     var actions = new OpenQA.Selenium.Interactions.Actions(driver); // Create actions here for use throughout
 
                     // Add random delay to simulate human behavior
-                    await RandomDelay(3000, 6000);
+                    Console.WriteLine("Initial delay before starting...");
+                    await RandomDelay(Delays.InitialDelayMin, Delays.InitialDelayMax);
 
                     // Check if we need to login by looking for the email input field
                     bool needsLogin = false;
@@ -161,18 +204,20 @@ namespace FacebookAutoPoster
                         var loginButton = driver.FindElement(By.Name("login"));
 
                         await TypeLikeHuman(emailInput, postData.Username);
-                        await RandomDelay(1000, 2000);
+                        Console.WriteLine("Waiting between login fields...");
+                        await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
                         await TypeLikeHuman(passwordInput, postData.Password);
-                        await RandomDelay(1000, 2000);
+                        Console.WriteLine("Waiting before clicking login...");
+                        await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
                         
                         // Move mouse to button before clicking
                         actions.MoveToElement(loginButton).Perform();
-                        await RandomDelay(500, 1000);
+                        await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
                         loginButton.Click();
 
                         // Wait for login to complete with better detection
-                        Console.WriteLine("Waiting for login to complete...");
-                        await Task.Delay(20000);
+                        Console.WriteLine($"Waiting {Delays.PostLoginDelay/1000} seconds for login to complete...");
+                        await Task.Delay(Delays.PostLoginDelay);
                     }
                     else
                     {
@@ -182,7 +227,8 @@ namespace FacebookAutoPoster
                     // Navigate to the group
                     Console.WriteLine($"Navigating to group: {postData.GroupUrl}");
                     driver.Navigate().GoToUrl(postData.GroupUrl);
-                    await Task.Delay(15000);
+                    Console.WriteLine($"Waiting {Delays.GroupLoadDelay/1000} seconds for group to load...");
+                    await Task.Delay(Delays.GroupLoadDelay);
 
                     // Try multiple approaches to find the post creation area
                     Console.WriteLine("Looking for post creation area...");
@@ -219,7 +265,8 @@ namespace FacebookAutoPoster
                         throw new Exception("Could not find post creation area with any known selector");
                     }
 
-                    await RandomDelay(2000, 4000);
+                    Console.WriteLine($"Waiting {Delays.PostAreaDelay/1000} seconds before clicking post area...");
+                    await RandomDelay(Delays.PostAreaDelay, Delays.PostAreaDelay);
                     
                     // Click using JavaScript with multiple approaches
                     try
@@ -238,7 +285,8 @@ namespace FacebookAutoPoster
                         }
                     }
 
-                    await Task.Delay(5000);
+                    await Task.Delay(Delays.PostAreaDelay);
+                    Console.WriteLine("Waiting for post input field...");
 
                     // Find the input field in the popup using multiple approaches
                     Console.WriteLine("Looking for post input field in popup...");
@@ -246,89 +294,60 @@ namespace FacebookAutoPoster
                     // First find the post creation area
                     var postCreationArea = wait.Until(d => d.FindElement(By.XPath("//div[contains(text(), 'Create a public post…')]")));
                     Console.WriteLine("Found post creation area");
-                    await RandomDelay(2000, 3000);
+                    await RandomDelay(1000, 2000);
+                    Console.WriteLine("Waited post creation area");
 
                     // Now find the actual input field within or after this area
                     IWebElement postInput = null;
                     var inputSelectors = new[]
                     {
-                        ".//following::span[@data-lexical-text='true']",
-                        ".//following::div[@contenteditable='true']//span[@data-lexical-text='true']",
-                        "//span[@data-lexical-text='true']",
-                        "//div[@contenteditable='true']//span[@data-lexical-text='true']",
-                        "//div[@role='textbox']//span[@data-lexical-text='true']",
-                        "//div[contains(@aria-label, 'Write something')]//span[@data-lexical-text='true']"
+                        "//p[@class='xdj266r x11i5rnm xat24cr x1mh8g0r x16tdsg8']",
+                        "//p[contains(@class, 'xdj266r') and contains(@class, 'x11i5rnm') and contains(@class, 'xat24cr')]",
+                        "//div[@contenteditable='true']//p[contains(@class, 'xdj266r')]",
+                        "//div[@role='textbox']//p[contains(@class, 'xdj266r')]",
+                        "//div[contains(@class, 'notranslate')]//p[contains(@class, 'xdj266r')]"
                     };
 
+                    Console.WriteLine("Attempting to find post input field in popup...");
                     foreach (var selector in inputSelectors)
-                    {
+                    {                             
+                        Console.WriteLine($"Trying selector: {selector}");
                         try
                         {
-                            // If selector starts with .//, search from postCreationArea
-                            if (selector.StartsWith(".//"))
-                            {
-                                postInput = postCreationArea.FindElement(By.XPath(selector));
-                            }
-                            else
-                            {
-                                postInput = wait.Until(d => d.FindElement(By.XPath(selector)));
-                            }
-                            
+                            // Wait for the popup to be fully loaded
+                            await Task.Delay(2000);
+                            postInput = wait.Until(d => d.FindElement(By.XPath(selector)));
                             if (postInput != null && postInput.Displayed)
                             {
                                 Console.WriteLine($"Found input field using selector: {selector}");
                                 break;
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            Console.WriteLine($"Error finding selector {selector}: {ex.Message}");
                             continue;
                         }
                     }
 
                     if (postInput == null)
                     {
-                        // If we couldn't find the span, try to find the parent contenteditable div
-                        var parentSelectors = new[]
+                        // Take a screenshot for debugging
+                        try
                         {
-                            ".//following::div[@contenteditable='true']",
-                            ".//following::div[@role='textbox']",
-                            "//div[@contenteditable='true']",
-                            "//div[@role='textbox']"
-                        };
-
-                        foreach (var selector in parentSelectors)
-                        {
-                            try
-                            {
-                                if (selector.StartsWith(".//"))
-                                {
-                                    postInput = postCreationArea.FindElement(By.XPath(selector));
-                                }
-                                else
-                                {
-                                    postInput = wait.Until(d => d.FindElement(By.XPath(selector)));
-                                }
-                                
-                                if (postInput != null && postInput.Displayed)
-                                {
-                                    Console.WriteLine($"Found parent input field using selector: {selector}");
-                                    break;
-                                }
-                            }
-                            catch
-                            {
-                                continue;
-                            }
+                            var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
+                            var screenshotPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error_screenshot.png");
+                            screenshot.SaveAsFile(screenshotPath);
+                            Console.WriteLine($"Screenshot saved to: {screenshotPath}");
                         }
-                    }
-
-                    if (postInput == null)
-                    {
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to take screenshot: {ex.Message}");
+                        }
                         throw new Exception("Could not find post input field with any known selector");
                     }
 
-                    await RandomDelay(2000, 4000);
+                    await RandomDelay(1000, 2000);
 
                     // Try to focus the input field before typing
                     try
@@ -341,12 +360,12 @@ namespace FacebookAutoPoster
                     {
                         actions.MoveToElement(postInput).Click().Perform();
                     }
-                    await RandomDelay(1000, 2000);
+                    await RandomDelay(500, 1000);
 
                     // Enter post text with enhanced human-like behavior
                     Console.WriteLine("Entering post text...");
                     await TypeLikeHuman(postInput, postData.PostText);
-                    await RandomDelay(2000, 4000);
+                    await RandomDelay(1000, 2000);
 
                     // Find and click the post button using multiple approaches
                     Console.WriteLine("Looking for post button...");
@@ -382,7 +401,8 @@ namespace FacebookAutoPoster
                         throw new Exception("Could not find post button with any known selector");
                     }
 
-                    await RandomDelay(2000, 4000);
+                    Console.WriteLine("Waiting before clicking post button...");
+                    await RandomDelay(Delays.PostAreaDelay, Delays.PostAreaDelay);
 
                     // Click post button with multiple approaches
                     try
@@ -402,7 +422,8 @@ namespace FacebookAutoPoster
                     }
 
                     Console.WriteLine("Post completed successfully!");
-                    await Task.Delay(10000); // Wait to see the post being created
+                    Console.WriteLine($"Waiting {Delays.PostCompleteDelay/1000} seconds to confirm post completion...");
+                    await Task.Delay(Delays.PostCompleteDelay); // Wait to see the post being created
                     
                     // Close the browser after successful post
                     driver.Quit();
@@ -423,12 +444,12 @@ namespace FacebookAutoPoster
             {
                 element.SendKeys(c.ToString());
                 // Random delay between keystrokes (50-150ms)
-                await Task.Delay(random.Next(50, 150));
+                await Task.Delay(random.Next(Delays.TypeDelayMin, Delays.TypeDelayMax));
                 
                 // Occasionally add a longer pause to simulate thinking
                 if (random.Next(100) < 5) // 5% chance
                 {
-                    await Task.Delay(random.Next(500, 1000));
+                    await Task.Delay(random.Next(Delays.ThinkingDelayMin, Delays.ThinkingDelayMax));
                 }
             }
         }

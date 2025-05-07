@@ -1,0 +1,36 @@
+[19032:21144:0507/114230.225:INFO:chrome_browser_cloud_management_controller.cc(202)] No machine level policy manager exists.
+[1876:9712:0507/114230.376:INFO:cpu_info.cc(53)] Available number of cores: 12
+[6224:4076:0507/114230.385:INFO:cpu_info.cc(53)] Available number of cores: 12
+[21236:15080:0507/114230.764:INFO:cpu_info.cc(53)] Available number of cores: 12
+[11240:15004:0507/114231.104:INFO:cpu_info.cc(53)] Available number of cores: 12
+[2136:18652:0507/114231.236:INFO:cpu_info.cc(53)] Available number of cores: 12
+[21332:15700:0507/114231.338:VERBOSE1:viz_main_impl.cc(85)] VizNullHypothesis is disabled (not a warning)
+[19032:21144:0507/114231.917:INFO:CONSOLE(0)] "[DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o", source: https://www.facebook.com/ (0)
+[21332:15700:0507/114232.123:ERROR:gles2_cmd_decoder_passthrough.cc(1081)] [GroupMarkerNotSet(crbug.com/242999)!:A0402900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+[19032:21144:0507/114232.140:INFO:CONSOLE(0)] "[GroupMarkerNotSet(crbug.com/242999)!:A0402900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.", source: https://www.facebook.com/ (0)
+[21332:15700:0507/114232.146:ERROR:gles2_cmd_decoder_passthrough.cc(1081)] [GroupMarkerNotSet(crbug.com/242999)!:A0702900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+[21332:15700:0507/114232.154:ERROR:gles2_cmd_decoder_passthrough.cc(1081)] [GroupMarkerNotSet(crbug.com/242999)!:A0A02900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+[19032:21144:0507/114232.163:INFO:CONSOLE(0)] "
+%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source:  (0)
+[19032:21144:0507/114232.163:INFO:CONSOLE(0)] "
+%cThis is a browser feature intended for developers. If someone told you to copy and paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source:  (0)
+[19032:21144:0507/114232.163:INFO:CONSOLE(0)] "
+%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source:  (0)
+[19032:21144:0507/114232.163:INFO:CONSOLE(0)] "
+%c ", source:  (0)
+[21332:15700:0507/114232.168:ERROR:gles2_cmd_decoder_passthrough.cc(1081)] [GroupMarkerNotSet(crbug.com/242999)!:A0D02900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+[19032:21144:0507/114232.174:INFO:CONSOLE(0)] "[GroupMarkerNotSet(crbug.com/242999)!:A0702900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.", source: https://www.facebook.com/ (0)
+[19032:21144:0507/114232.174:INFO:CONSOLE(0)] "[GroupMarkerNotSet(crbug.com/242999)!:A0A02900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.", source: https://www.facebook.com/ (0)
+[19032:21144:0507/114232.174:INFO:CONSOLE(0)] "[GroupMarkerNotSet(crbug.com/242999)!:A0D02900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.", source: https://www.facebook.com/ (0)
+[19032:21144:0507/114237.237:INFO:CONSOLE(0)] "
+%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source:  (0)
+[19032:21144:0507/114237.237:INFO:CONSOLE(0)] "
+%cThis is a browser feature intended for developers. If someone told you to copy and paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source:  (0)
+[19032:21144:0507/114237.237:INFO:CONSOLE(0)] "
+%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source:  (0)
+[19032:21144:0507/114237.237:INFO:CONSOLE(0)] "
+%c ", source:  (0)
+[21332:15700:0507/114237.241:ERROR:gles2_cmd_decoder_passthrough.cc(1081)] [GroupMarkerNotSet(crbug.com/242999)!:A0A02900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+[19032:21144:0507/114237.248:INFO:CONSOLE(0)] "[GroupMarkerNotSet(crbug.com/242999)!:A0A02900446B0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.", source: https://www.facebook.com/login/?privacy_mutation_token=eyJ0eXBlIjowLCJjcmVhdGlvbl90aW1lIjoxNzQ2NjAwMTQ4LCJjYWxsc2l0ZV9pZCI6MzgxMjI5MDc5NTc1OTQ2fQ%3D%3D&next (0)
+[7976:10024:0507/114240.983:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
+[7976:10024:0507/114240.983:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
