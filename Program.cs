@@ -364,8 +364,65 @@ namespace FacebookAutoPoster
 
                     // Enter post text with enhanced human-like behavior
                     Console.WriteLine("Entering post text...");
-                    await TypeLikeHuman(postInput, postData.PostText);
-                    await RandomDelay(1000, 2000);
+                    
+                    // Split the text into parts and add some natural pauses
+                    var textParts = postData.PostText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var currentPart = "";
+                    
+                    foreach (var part in textParts)
+                    {
+                        currentPart += part + " ";
+                        await TypeLikeHuman(postInput, part + " ");
+                        
+                        // Add longer pauses between sentences or after certain words
+                        if (part.EndsWith(".") || part.EndsWith("!") || part.EndsWith("?"))
+                        {
+                            await RandomDelay(1000, 2000);
+                        }
+                        else if (part.Contains("http") || part.Contains("www"))
+                        {
+                            // Add extra delay before and after typing URLs
+                            await RandomDelay(2000, 3000);
+                        }
+                        else
+                        {
+                            await RandomDelay(300, 800);
+                        }
+                    }
+
+                    // Add a final pause before proceeding
+                    await RandomDelay(2000, 3000);
+
+                    // Wait for link preview to appear and remove it
+                    Console.WriteLine("Waiting for link preview to appear...");
+                    await Task.Delay(5000); // Wait 5 seconds for link preview to load
+
+                    try
+                    {
+                        var removeLinkButton = wait.Until(d => d.FindElement(By.XPath("//div[@aria-label='Remove link preview from your post']")));
+                        if (removeLinkButton != null && removeLinkButton.Displayed)
+                        {
+                            Console.WriteLine("Found link preview, removing it...");
+                            await RandomDelay(1000, 2000);
+                            try
+                            {
+                                ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", removeLinkButton);
+                            }
+                            catch
+                            {
+                                actions.MoveToElement(removeLinkButton).Click().Perform();
+                            }
+                            Console.WriteLine("Link preview removed successfully");
+                            await RandomDelay(2000, 3000); // Longer delay after removing preview
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"No link preview found or error removing it: {ex.Message}");
+                    }
+
+                    // Add a final pause before clicking post
+                    await RandomDelay(3000, 5000);
 
                     // Find and click the post button using multiple approaches
                     Console.WriteLine("Looking for post button...");
