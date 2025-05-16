@@ -1,3 +1,5 @@
-2025/05/07-12:08:01.447 5088 Reusing MANIFEST F:\facebookauto\FacebookAutoPoster\bin\Debug\net8.0\ChromeProfiles\FB2\Default\Local Storage\leveldb/MANIFEST-000001
-2025/05/07-12:08:01.453 5088 Recovering log #4
-2025/05/07-12:08:01.457 5088 Reusing old log F:\facebookauto\FacebookAutoPoster\bin\Debug\net8.0\ChromeProfiles\FB2\Default\Local Storage\leveldb/000004.log 
+2025/05/17-04:07:48.246 5134 Reusing MANIFEST F:\facebookauto\FacebookAutoPoster\bin\Debug\net8.0\ChromeProfiles\FB2\Default\Local Storage\leveldb/MANIFEST-000001
+2025/05/17-04:07:48.252 5134 Recovering log #8
+2025/05/17-04:07:48.252 5134 Level-0 table #11: started
+2025/05/17-04:07:48.265 5134 Level-0 table #11: 21070 bytes OK
+2025/05/17-04:07:48.274 5134 Delete type=0 #8

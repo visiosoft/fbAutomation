@@ -1,29 +1,29 @@
-[20216:7780:0507/121849.558:INFO:chrome_browser_cloud_management_controller.cc(202)] No machine level policy manager exists.
-[20316:19168:0507/121849.697:INFO:cpu_info.cc(53)] Available number of cores: 12
-[20648:3088:0507/121849.701:INFO:cpu_info.cc(53)] Available number of cores: 12
-[17756:21004:0507/121850.013:INFO:cpu_info.cc(53)] Available number of cores: 12
-[7880:6644:0507/121850.340:INFO:cpu_info.cc(53)] Available number of cores: 12
-[21368:8332:0507/121850.654:VERBOSE1:viz_main_impl.cc(85)] VizNullHypothesis is disabled (not a warning)
-[13164:2076:0507/121850.944:INFO:cpu_info.cc(53)] Available number of cores: 12
-[21120:15672:0507/121851.280:INFO:cpu_info.cc(53)] Available number of cores: 12
-[20216:7780:0507/121852.939:INFO:CONSOLE(250)] "
-%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121852.942:INFO:CONSOLE(250)] "
-%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121852.942:INFO:CONSOLE(250)] "
-%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121852.942:INFO:CONSOLE(250)] "
-%c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121856.264:INFO:CONSOLE(250)] "
-%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121856.264:INFO:CONSOLE(250)] "
-%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121856.264:INFO:CONSOLE(250)] "
-%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121856.264:INFO:CONSOLE(250)] "
-%c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yJ/r/mtiijeELSwP.js (250)
-[20216:7780:0507/121928.139:INFO:CONSOLE(0)] "ResizeObserver loop completed with undelivered notifications.", source: https://www.facebook.com/groups/2193861384102531 (0)
-[20216:7780:0507/121928.805:INFO:CONSOLE(0)] "ResizeObserver loop completed with undelivered notifications.", source: https://www.facebook.com/groups/2193861384102531 (0)
-[20216:7780:0507/121934.999:INFO:CONSOLE(0)] "ResizeObserver loop completed with undelivered notifications.", source: https://www.facebook.com/groups/2193861384102531 (0)
-[15948:5728:0507/121943.849:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
-[15948:5728:0507/121943.849:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
+[4284:18212:0517/041355.601:INFO:components\enterprise\browser\controller\chrome_browser_cloud_management_controller.cc:202] No machine level policy manager exists.
+[14448:14444:0517/041355.736:INFO:third_party\webrtc\system_wrappers\source\cpu_info.cc:56] Available number of cores: 12
+[9744:9512:0517/041355.736:INFO:third_party\webrtc\system_wrappers\source\cpu_info.cc:56] Available number of cores: 12
+[8740:19152:0517/041356.700:VERBOSE1:components\viz\service\main\viz_main_impl.cc:85] VizNullHypothesis is disabled (not a warning)
+[19252:11460:0517/041356.867:INFO:third_party\webrtc\system_wrappers\source\cpu_info.cc:56] Available number of cores: 12
+[6712:7900:0517/041356.894:INFO:third_party\webrtc\system_wrappers\source\cpu_info.cc:56] Available number of cores: 12
+[20232:17888:0517/041357.636:INFO:third_party\webrtc\system_wrappers\source\cpu_info.cc:56] Available number of cores: 12
+[15344:2628:0517/041358.566:INFO:third_party\webrtc\system_wrappers\source\cpu_info.cc:56] Available number of cores: 12
+[16472:10672:0517/041358.883:INFO:third_party\webrtc\system_wrappers\source\cpu_info.cc:56] Available number of cores: 12
+[4284:18212:0517/041401.400:INFO:CONSOLE:250] "
+%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041401.400:INFO:CONSOLE:250] "
+%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041401.401:INFO:CONSOLE:250] "
+%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041401.401:INFO:CONSOLE:250] "
+%c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041406.341:INFO:CONSOLE:250] "
+%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041406.341:INFO:CONSOLE:250] "
+%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041406.341:INFO:CONSOLE:250] "
+%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041406.341:INFO:CONSOLE:250] "
+%c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yK/r/O58TVbqE_xm.js (250)
+[4284:18212:0517/041502.678:INFO:CONSOLE:0] "ResizeObserver loop completed with undelivered notifications.", source: https://www.facebook.com/groups/2193861384102531 (0)
+[4284:18212:0517/041503.191:INFO:CONSOLE:0] "ResizeObserver loop completed with undelivered notifications.", source: https://www.facebook.com/groups/2193861384102531 (0)
+[12328:15772:0517/041542.754:WARNING:net\extras\sqlite\sqlite_persistent_store_backend_base.cc:176] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
+[12328:15772:0517/041542.754:WARNING:net\extras\sqlite\sqlite_persistent_store_backend_base.cc:176] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.

@@ -9,5 +9,7 @@ namespace FacebookAutoPoster.Models
         public string Password { get; set; }
         public string GroupUrl { get; set; }
         public string PostText { get; set; }
+        public bool ClosePreview { get; set; }
+        public bool IsAnonymous { get; set; }
     }
 } 

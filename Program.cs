@@ -76,53 +76,13 @@ namespace FacebookAutoPoster
         {
             try
             {
-                // Load proxies from file
-                LoadProxies();
-
-                var config = new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture)
-                {
-                    HasHeaderRecord = true,
-                    MissingFieldFound = null,  // Ignore missing fields
-                    HeaderValidated = null,    // Don't validate headers
-                    PrepareHeaderForMatch = args => args.Header.ToLower() // Case-insensitive header matching
-                };
-
-                using (var reader = new StreamReader("posts.csv"))
-                using (var csv = new CsvReader(reader, config))
-                {
-                    var records = csv.GetRecords<PostData>();
-                    foreach (var record in records)
-                    {
-                        if (string.IsNullOrWhiteSpace(record.GroupUrl))
-                        {
-                            Console.WriteLine("Skipping record with empty group URL");
-                            continue;
-                        }
-
-                        // Sanitize profile name for directory creation
-                        if (!string.IsNullOrWhiteSpace(record.ProfileName))
-                        {
-                            record.ProfileName = string.Join("_", record.ProfileName.Split(Path.GetInvalidFileNameChars()));
-                        }
-                        else
-                        {
-                            Console.WriteLine("Skipping record with empty profile name");
-                            continue;
-                        }
-
-                        Console.WriteLine($"\nProcessing post for group: {record.GroupUrl}");
-                        await PostToFacebook(record);
-                        // Add random delay between posts to avoid detection
-                        var random = new Random();
-                        var delay = random.Next(Delays.BetweenPostsMin, Delays.BetweenPostsMax); // Random delay between 10-20 seconds
-                        await Task.Delay(delay);
-                    }
-                }
+                await RunAutoPoster();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
             }
         }
 
@@ -512,6 +472,80 @@ namespace FacebookAutoPoster
                     await RandomDelay(1000, 2000);
                     Console.WriteLine("Waited post creation area");
 
+                    // Click the anonymous post toggle if IsAnonymous is true
+                    if (postData.IsAnonymous)
+                    {
+                        try
+                        {
+                            Console.WriteLine("Attempting to enable anonymous posting...");
+                            var anonymousToggle = wait.Until(d => d.FindElement(By.XPath("//input[@aria-label='Anonymous post toggle']")));
+                            if (anonymousToggle != null && anonymousToggle.Displayed)
+                            {
+                                // Check if it's not already checked
+                                if (!anonymousToggle.Selected)
+                                {
+                                    await RandomDelay(1000, 2000);
+                                    try
+                                    {
+                                        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", anonymousToggle);
+                                    }
+                                    catch
+                                    {
+                                        actions.MoveToElement(anonymousToggle).Click().Perform();
+                                    }
+                                    Console.WriteLine("Anonymous posting enabled successfully");
+                                    await RandomDelay(2000, 3000);
+
+                                    // Handle the "Got it" confirmation dialog
+                                    try
+                                    {
+                                        Console.WriteLine("Looking for 'Got it' confirmation dialog...");
+                                        var gotItButton = wait.Until(d => d.FindElement(By.XPath("//span[contains(text(), 'Got it')]")));
+                                        if (gotItButton != null && gotItButton.Displayed)
+                                        {
+                                            await RandomDelay(1000, 2000);
+                                            try
+                                            {
+                                                // Try to find the parent div that's clickable
+                                                var parentDiv = gotItButton.FindElement(By.XPath("./ancestor::div[@role='none']"));
+                                                ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", parentDiv);
+                                            }
+                                            catch
+                                            {
+                                                try
+                                                {
+                                                    ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", gotItButton);
+                                                }
+                                                catch
+                                                {
+                                                    actions.MoveToElement(gotItButton).Click().Perform();
+                                                }
+                                            }
+                                            Console.WriteLine("Clicked 'Got it' confirmation");
+                                            await RandomDelay(2000, 3000);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine($"Error handling 'Got it' confirmation: {ex.Message}");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Anonymous posting already enabled");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error enabling anonymous posting: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Anonymous posting disabled for this post");
+                    }
+
                     // Now find the actual input field within or after this area
                     IWebElement postInput = null;
                     var inputSelectors = new[]
@@ -608,32 +642,39 @@ namespace FacebookAutoPoster
                     // Add a final pause before proceeding
                     await RandomDelay(2000, 3000);
 
-                    // Wait for link preview to appear and remove it
+                    // Wait for link preview to appear and remove it if ClosePreview is true
                     Console.WriteLine("Waiting for link preview to appear...");
                     await Task.Delay(5000); // Wait 5 seconds for link preview to load
 
-                    try
+                    if (postData.ClosePreview)
                     {
-                        var removeLinkButton = wait.Until(d => d.FindElement(By.XPath("//div[@aria-label='Remove link preview from your post']")));
-                        if (removeLinkButton != null && removeLinkButton.Displayed)
+                        try
                         {
-                            Console.WriteLine("Found link preview, removing it...");
-                            await RandomDelay(1000, 2000);
-                            try
+                            var removeLinkButton = wait.Until(d => d.FindElement(By.XPath("//div[@aria-label='Remove link preview from your post']")));
+                            if (removeLinkButton != null && removeLinkButton.Displayed)
                             {
-                                ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", removeLinkButton);
+                                Console.WriteLine("Found link preview, removing it...");
+                                await RandomDelay(1000, 2000);
+                                try
+                                {
+                                    ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", removeLinkButton);
+                                }
+                                catch
+                                {
+                                    actions.MoveToElement(removeLinkButton).Click().Perform();
+                                }
+                                Console.WriteLine("Link preview removed successfully");
+                                await RandomDelay(2000, 3000); // Longer delay after removing preview
                             }
-                            catch
-                            {
-                                actions.MoveToElement(removeLinkButton).Click().Perform();
-                            }
-                            Console.WriteLine("Link preview removed successfully");
-                            await RandomDelay(2000, 3000); // Longer delay after removing preview
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"No link preview found or error removing it: {ex.Message}");
                         }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Console.WriteLine($"No link preview found or error removing it: {ex.Message}");
+                        Console.WriteLine("Keeping link preview as per configuration");
                     }
 
                     // Add a final pause before clicking post
@@ -644,11 +685,11 @@ namespace FacebookAutoPoster
                     IWebElement postButton = null;
                     var buttonSelectors = new[]
                     {
-                        "//div[@aria-label='Post']",
-                        "//div[contains(@aria-label, 'Post')]",
-                        "//div[contains(text(), 'Post')]",
-                        "//button[contains(@aria-label, 'Post')]",
-                        "//button[contains(text(), 'Post')]"
+                        "//span[contains(text(), 'Submit')]",
+                        "//div[contains(@class, 'x1lliihq')]//span[contains(text(), 'Submit')]",
+                        "//div[@role='none']//span[contains(text(), 'Submit')]",
+                        "//div[contains(@class, 'x1ja2u2z')]//span[contains(text(), 'Submit')]",
+                        "//div[contains(@class, 'x1lliihq') and contains(@class, 'x6ikm8r')]//span[contains(text(), 'Submit')]"
                     };
 
                     foreach (var selector in buttonSelectors)
@@ -679,23 +720,32 @@ namespace FacebookAutoPoster
                     // Click post button with multiple approaches
                     try
                     {
-                        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", postButton);
+                        // Try to find the parent div that's clickable
+                        var parentDiv = postButton.FindElement(By.XPath("./ancestor::div[@role='none']"));
+                        ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", parentDiv);
                     }
                     catch
                     {
                         try
                         {
-                            actions.MoveToElement(postButton).Click().Perform();
+                            ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", postButton);
                         }
                         catch
                         {
-                            postButton.Click();
+                            try
+                            {
+                                actions.MoveToElement(postButton).Click().Perform();
+                            }
+                            catch
+                            {
+                                postButton.Click();
+                            }
                         }
                     }
 
                     Console.WriteLine("Post completed successfully!");
-                    Console.WriteLine($"Waiting {Delays.PostCompleteDelay/1000} seconds to confirm post completion...");
-                    await Task.Delay(Delays.PostCompleteDelay); // Wait to see the post being created
+                    Console.WriteLine($"Waiting {Delays.PostCompleteDelay/1000} seconds before closing...");
+                    await Task.Delay(Delays.PostCompleteDelay); // Wait before closing
                     
                     // Close the browser after successful post
                     driver.Quit();
@@ -735,6 +785,52 @@ namespace FacebookAutoPoster
             var random = new Random();
             var delay = random.Next(minMs, maxMs);
             await Task.Delay(delay);
+        }
+
+        static async Task RunAutoPoster()
+        {
+            // Load proxies
+            LoadProxies();
+
+            var config = new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = true,
+                MissingFieldFound = null,  // Ignore missing fields
+                HeaderValidated = null,    // Don't validate headers
+                PrepareHeaderForMatch = args => args.Header.ToLower() // Case-insensitive header matching
+            };
+
+            using (var reader = new StreamReader("posts.csv"))
+            using (var csv = new CsvReader(reader, config))
+            {
+                var records = csv.GetRecords<PostData>();
+                foreach (var record in records)
+                {
+                    if (string.IsNullOrWhiteSpace(record.GroupUrl))
+                    {
+                        Console.WriteLine("Skipping record with empty group URL");
+                        continue;
+                    }
+
+                    // Sanitize profile name for directory creation
+                    if (!string.IsNullOrWhiteSpace(record.ProfileName))
+                    {
+                        record.ProfileName = string.Join("_", record.ProfileName.Split(Path.GetInvalidFileNameChars()));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Skipping record with empty profile name");
+                        continue;
+                    }
+
+                    Console.WriteLine($"\nProcessing post for group: {record.GroupUrl}");
+                    await PostToFacebook(record);
+                    // Add random delay between posts to avoid detection
+                    var random = new Random();
+                    var delay = random.Next(Delays.BetweenPostsMin, Delays.BetweenPostsMax); // Random delay between 10-20 seconds
+                    await Task.Delay(delay);
+                }
+            }
         }
     }
 }
