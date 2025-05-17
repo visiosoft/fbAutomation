@@ -12,6 +12,7 @@
           "CsvHelper": "33.0.1",
           "Microsoft.NET.ILLink.Tasks": "8.0.15",
           "Selenium.WebDriver": "4.32.0",
+          "Selenium.WebDriver.Extensions": "4.1.0",
           "runtimepack.Microsoft.NETCore.App.Runtime.win-x64": "8.0.15"
         },
         "runtime": {
@@ -747,11 +748,33 @@
         }
       },
       "Microsoft.NET.ILLink.Tasks/8.0.15": {},
+      "Selenium.Support/4.1.0": {
+        "dependencies": {
+          "Selenium.WebDriver": "4.32.0"
+        },
+        "runtime": {
+          "lib/net5.0/WebDriver.Support.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
       "Selenium.WebDriver/4.32.0": {
         "runtime": {
           "lib/net8.0/WebDriver.dll": {
             "assemblyVersion": "4.0.0.0",
             "fileVersion": "4.0.0.0"
+          }
+        }
+      },
+      "Selenium.WebDriver.Extensions/4.1.0": {
+        "dependencies": {
+          "Selenium.Support": "4.1.0"
+        },
+        "runtime": {
+          "lib/net6.0/Selenium.WebDriver.Extensions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       }
@@ -782,12 +805,26 @@
       "path": "microsoft.net.illink.tasks/8.0.15",
       "hashPath": "microsoft.net.illink.tasks.8.0.15.nupkg.sha512"
     },
+    "Selenium.Support/4.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wuK5cfgVaimOZqyuriY2geGpNsI9DWky8CuBlrkBnmebkSrRftxqwyUVy0NLooHaAB2iaMj7qM+VOdUEX5bCHQ==",
+      "path": "selenium.support/4.1.0",
+      "hashPath": "selenium.support.4.1.0.nupkg.sha512"
+    },
     "Selenium.WebDriver/4.32.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-7mocv9JMt3jth7nkfrKISv23dwRR8+1/QE0REyNco+L6A9tSFdR+makPZpGKSE8ppTt8JMyvFPQLgRnPzRL5+w==",
       "path": "selenium.webdriver/4.32.0",
       "hashPath": "selenium.webdriver.4.32.0.nupkg.sha512"
+    },
+    "Selenium.WebDriver.Extensions/4.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4FuU8SDJLJ2kXkwLxYXoTg+RHfRJH13shA6vZtcWhmdGMH/KgbuY9wo21r63gW/rnP1TVCeiHwf+T+Z0ALxT5A==",
+      "path": "selenium.webdriver.extensions/4.1.0",
+      "hashPath": "selenium.webdriver.extensions.4.1.0.nupkg.sha512"
     }
   },
   "runtimes": {

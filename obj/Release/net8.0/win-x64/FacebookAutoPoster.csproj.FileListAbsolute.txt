@@ -202,3 +202,5 @@ F:\facebookauto\FacebookAutoPoster\obj\Release\net8.0\win-x64\refint\FacebookAut
 F:\facebookauto\FacebookAutoPoster\obj\Release\net8.0\win-x64\FacebookAutoPoster.pdb
 F:\facebookauto\FacebookAutoPoster\obj\Release\net8.0\win-x64\FacebookAutoPoster.genruntimeconfig.cache
 F:\facebookauto\FacebookAutoPoster\obj\Release\net8.0\win-x64\ref\FacebookAutoPoster.dll
+F:\facebookauto\FacebookAutoPoster\bin\Release\net8.0\win-x64\WebDriver.Support.dll
+F:\facebookauto\FacebookAutoPoster\bin\Release\net8.0\win-x64\Selenium.WebDriver.Extensions.dll
