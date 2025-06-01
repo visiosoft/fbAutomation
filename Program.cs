@@ -72,6 +72,7 @@ namespace FacebookAutoPoster
         private static int _postCount = 0;
         private static readonly object _proxyLock = new object();
         private static Dictionary<string, ChromeDriver> _activeDrivers = new Dictionary<string, ChromeDriver>();
+        private static readonly object _driverLock = new object();
 
         static async Task Main(string[] args)
         {
@@ -234,6 +235,24 @@ namespace FacebookAutoPoster
             }
         }
 
+        static void CleanupChromeProfiles()
+        {
+            try
+            {
+                var baseProfileDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ChromeProfiles");
+                if (Directory.Exists(baseProfileDir))
+                {
+                    Console.WriteLine("Cleaning up Chrome profiles...");
+                    Directory.Delete(baseProfileDir, true);
+                    Console.WriteLine("Chrome profiles cleaned up successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error cleaning up Chrome profiles: {ex.Message}");
+            }
+        }
+
         static async Task PostToFacebook(PostData postData)
         {
             ChromeDriver? driver = null;
@@ -243,8 +262,14 @@ namespace FacebookAutoPoster
             try
             {
                 // Check if we already have a driver for this profile
-                if (!_activeDrivers.TryGetValue(postData.ProfileName, out driver))
+                lock (_driverLock)
                 {
+                    _activeDrivers.TryGetValue(postData.ProfileName, out driver);
+                }
+
+                if (driver == null)
+                {
+                    Console.WriteLine($"Creating new Chrome instance for profile: {postData.ProfileName}");
                     var options = new ChromeOptions();
                     
                     // Get proxy for this specific account
@@ -270,6 +295,7 @@ namespace FacebookAutoPoster
                         Directory.CreateDirectory(baseProfileDir);
                     }
                     
+                    // Use fixed profile directory for each account
                     var userDataDir = Path.Combine(baseProfileDir, postData.ProfileName);
                     if (!Directory.Exists(userDataDir))
                     {
@@ -278,118 +304,152 @@ namespace FacebookAutoPoster
                     options.AddArgument($"--user-data-dir={userDataDir}");
                     options.AddArgument($"--profile-directory=Default");
                     
-                    // Enhanced anti-detection measures
+                    // Essential anti-detection options
                     options.AddArgument("--disable-blink-features=AutomationControlled");
                     options.AddArgument("--disable-notifications");
-                    options.AddArgument("--disable-popup-blocking");
-                    options.AddArgument("--disable-infobars");
-                    options.AddArgument("--disable-extensions");
-                    options.AddArgument("--disable-gpu");
-                    options.AddArgument("--no-sandbox");
-                    options.AddArgument("--disable-dev-shm-usage");
                     options.AddArgument("--start-maximized");
-                    options.AddArgument("--disable-web-security");
-                    options.AddArgument("--allow-running-insecure-content");
-                    options.AddArgument("--disable-features=IsolateOrigins,site-per-process");
                     
-                    // Randomize user agent
-                    var userAgents = new[]
-                    {
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                    };
-                    var random = new Random();
-                    options.AddArgument($"--user-agent={userAgents[random.Next(userAgents.Length)]}");
-                    
-                    // Enhanced experimental options
+                    // Add remote debugging port
+                    var debugPort = new Random().Next(9222, 9999);
+                    options.AddArgument($"--remote-debugging-port={debugPort}");
+
+                    // Add these options to prevent automation detection
                     options.AddExcludedArgument("enable-automation");
                     options.AddAdditionalOption("useAutomationExtension", false);
                     
-                    // Enhanced preferences
-                    var prefs = new Dictionary<string, object>
-                    {
-                        ["profile.default_content_setting_values.notifications"] = 2,
-                        ["credentials_enable_service"] = false,
-                        ["profile.password_manager_enabled"] = false,
-                        ["profile.managed_default_content_settings.images"] = 1,
-                        ["profile.default_content_setting_values.cookies"] = 1
-                    };
-                    foreach (var pref in prefs)
-                    {
-                        options.AddUserProfilePreference(pref.Key, pref.Value);
-                    }
-                    
-                    driver = new ChromeDriver(options);
-                    _activeDrivers[postData.ProfileName] = driver;
-                    isNewDriver = true;
-
-                    // Enhanced JavaScript to prevent detection
-                    ((IJavaScriptExecutor)driver).ExecuteScript(@"
-                        Object.defineProperty(navigator, 'webdriver', {
-                            get: () => undefined
-                        });
-                        Object.defineProperty(navigator, 'plugins', {
-                            get: () => [1, 2, 3, 4, 5]
-                        });
-                        Object.defineProperty(navigator, 'languages', {
-                            get: () => ['en-US', 'en']
-                        });
-                        window.chrome = {
-                            runtime: {},
-                            loadTimes: function(){},
-                            csi: function(){},
-                            app: {}
-                        };
-                    ");
-
-                    Console.WriteLine("Opening Facebook...");
-                    driver.Navigate().GoToUrl("https://www.facebook.com");
-                    
-                    var initialWait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
-                    var initialActions = new OpenQA.Selenium.Interactions.Actions(driver);
-
-                    // Add random delay to simulate human behavior
-                    Console.WriteLine("Initial delay before starting...");
-                    await RandomDelay(Delays.InitialDelayMin, Delays.InitialDelayMax);
-
-                    // Check if we need to login by looking for the email input field
-                    bool needsLogin = false;
                     try
                     {
-                        var emailField = driver.FindElements(By.Id("email"));
-                        needsLogin = emailField.Count > 0 && emailField[0].Displayed;
-                    }
-                    catch
-                    {
-                        needsLogin = false;
-                    }
+                        driver = new ChromeDriver(options);
+                        lock (_driverLock)
+                        {
+                            _activeDrivers[postData.ProfileName] = driver;
+                        }
+                        isNewDriver = true;
 
-                    if (needsLogin)
-                    {
-                        // Login with enhanced human-like behavior
-                        Console.WriteLine("Login required. Attempting to login...");
-                        var emailInput = initialWait.Until(d => d.FindElement(By.Id("email")));
-                        var passwordInput = driver.FindElement(By.Id("pass"));
-                        var loginButton = driver.FindElement(By.Name("login"));
+                        // Execute JavaScript to remove automation flags
+                        ((IJavaScriptExecutor)driver).ExecuteScript(@"
+                            Object.defineProperty(navigator, 'webdriver', {
+                                get: () => undefined
+                            });
+                            Object.defineProperty(navigator, 'plugins', {
+                                get: () => [1, 2, 3, 4, 5]
+                            });
+                            Object.defineProperty(navigator, 'languages', {
+                                get: () => ['en-US', 'en']
+                            });
+                            window.chrome = {
+                                runtime: {},
+                                loadTimes: function(){},
+                                csi: function(){},
+                                app: {}
+                            };
+                        ");
 
-                        await TypeLikeHuman(emailInput, postData.Username);
-                        Console.WriteLine("Waiting between login fields...");
-                        await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
-                        await TypeLikeHuman(passwordInput, postData.Password);
-                        Console.WriteLine("Waiting before clicking login...");
-                        await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
+                        Console.WriteLine("Opening Facebook...");
+                        driver.Navigate().GoToUrl("https://www.facebook.com");
                         
-                        initialActions.MoveToElement(loginButton).Perform();
-                        await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
-                        loginButton.Click();
+                        var initialWait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
+                        var initialActions = new OpenQA.Selenium.Interactions.Actions(driver);
 
-                        Console.WriteLine($"Waiting {Delays.PostLoginDelay/1000} seconds for login to complete...");
-                        await Task.Delay(Delays.PostLoginDelay);
+                        // Add random delay to simulate human behavior
+                        Console.WriteLine("Initial delay before starting...");
+                        await RandomDelay(Delays.InitialDelayMin, Delays.InitialDelayMax);
+
+                        // Check if we need to login by looking for the email input field
+                        bool needsLogin = false;
+                        try
+                        {
+                            var emailField = driver.FindElements(By.Id("email"));
+                            needsLogin = emailField.Count > 0 && emailField[0].Displayed;
+                        }
+                        catch
+                        {
+                            needsLogin = false;
+                        }
+
+                        if (needsLogin)
+                        {
+                            // Login with enhanced human-like behavior
+                            Console.WriteLine("Login required. Attempting to login...");
+                            var emailInput = initialWait.Until(d => d.FindElement(By.Id("email")));
+                            var passwordInput = driver.FindElement(By.Id("pass"));
+                            var loginButton = driver.FindElement(By.Name("login"));
+
+                            await TypeLikeHuman(emailInput, postData.Username);
+                            Console.WriteLine("Waiting between login fields...");
+                            await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
+                            await TypeLikeHuman(passwordInput, postData.Password);
+                            Console.WriteLine("Waiting before clicking login...");
+                            await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
+                            
+                            initialActions.MoveToElement(loginButton).Perform();
+                            await RandomDelay(Delays.LoginDelayMin, Delays.LoginDelayMax);
+                            loginButton.Click();
+
+                            Console.WriteLine($"Waiting {Delays.PostLoginDelay/1000} seconds for login to complete...");
+                            await Task.Delay(Delays.PostLoginDelay);
+
+                            // Check for 2FA
+                            try
+                            {
+                                Console.WriteLine("Checking for 2FA...");
+                                var wait2FA = new WebDriverWait(driver, TimeSpan.FromSeconds(60)); // Increased timeout
+                                var twoFactorElements = driver.FindElements(By.XPath("//input[@placeholder='Enter code']"));
+                                
+                                if (twoFactorElements.Count > 0 && twoFactorElements[0].Displayed)
+                                {
+                                    Console.WriteLine("2FA detected! Please enter the code manually...");
+                                    Console.WriteLine("Waiting for 2FA completion...");
+                                    
+                                    // Wait for 2FA to be completed (check if we're redirected to Facebook home)
+                                    wait2FA.Until(d => d.Url.Contains("facebook.com") && !d.Url.Contains("checkpoint"));
+                                    Console.WriteLine("2FA completed successfully!");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"No 2FA detected or error checking 2FA: {ex.Message}");
+                            }
+
+                            // Additional wait after login/2FA
+                            Console.WriteLine("Waiting additional time for login process to complete...");
+                            await Task.Delay(30000); // Increased to 30 seconds after login/2FA
+                            
+                            // Additional check to ensure we're properly logged in
+                            try
+                            {
+                                Console.WriteLine("Verifying login status...");
+                                driver.Navigate().GoToUrl("https://www.facebook.com");
+                                await Task.Delay(10000); // Wait 10 seconds after navigation
+                                
+                                // Check if we're still on login page
+                                var emailField = driver.FindElements(By.Id("email"));
+                                if (emailField.Count > 0 && emailField[0].Displayed)
+                                {
+                                    Console.WriteLine("Still on login page, waiting additional time...");
+                                    await Task.Delay(20000); // Wait 20 more seconds if still on login page
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error verifying login status: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Already logged in, proceeding with post...");
+                        }
                     }
-                    else
+                    catch (Exception ex) when (ex.Message.Contains("user data directory is already in use"))
                     {
-                        Console.WriteLine("Already logged in, proceeding with post...");
+                        Console.WriteLine("Chrome profile is in use, cleaning up...");
+                        CleanupChromeProfiles();
+                        driver = new ChromeDriver(options);
+                        lock (_driverLock)
+                        {
+                            _activeDrivers[postData.ProfileName] = driver;
+                        }
+                        isNewDriver = true;
                     }
                 }
 
@@ -471,25 +531,47 @@ namespace FacebookAutoPoster
                     "//div[contains(@aria-label, 'Write Post')]"
                 };
 
+                Console.WriteLine($"Trying {selectors.Length} different selectors to find post area...");
                 foreach (var selector in selectors)
                 {
                     try
                     {
+                        Console.WriteLine($"Attempting selector: {selector}");
                         postArea = wait.Until(d => d.FindElement(By.XPath(selector)));
                         if (postArea != null && postArea.Displayed)
                         {
-                            Console.WriteLine($"Found post area using selector: {selector}");
+                            Console.WriteLine($"Successfully found post area using selector: {selector}");
+                            Console.WriteLine($"Post area is displayed: {postArea.Displayed}");
+                            Console.WriteLine($"Post area is enabled: {postArea.Enabled}");
                             break;
                         }
+                        else
+                        {
+                            Console.WriteLine($"Found element but it's not displayed or enabled");
+                        }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Console.WriteLine($"Failed with selector {selector}: {ex.Message}");
                         continue;
                     }
                 }
 
                 if (postArea == null)
                 {
+                    Console.WriteLine("ERROR: Could not find post creation area with any known selector");
+                    // Take a screenshot for debugging
+                    try
+                    {
+                        var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
+                        var screenshotPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "post_area_not_found.png");
+                        screenshot.SaveAsFile(screenshotPath);
+                        Console.WriteLine($"Screenshot saved to: {screenshotPath}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to take screenshot: {ex.Message}");
+                    }
                     throw new Exception("Could not find post creation area with any known selector");
                 }
 
@@ -497,19 +579,36 @@ namespace FacebookAutoPoster
                 await RandomDelay(Delays.PostAreaDelay, Delays.PostAreaDelay);
                 
                 // Click using JavaScript with multiple approaches
+                Console.WriteLine("Attempting to click post area...");
                 try
                 {
+                    Console.WriteLine("Trying JavaScript click...");
                     ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", postArea);
+                    Console.WriteLine("JavaScript click successful");
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"JavaScript click failed: {ex.Message}");
                     try
                     {
+                        Console.WriteLine("Trying Actions click...");
                         actions.MoveToElement(postArea).Click().Perform();
+                        Console.WriteLine("Actions click successful");
                     }
-                    catch
+                    catch (Exception ex2)
                     {
-                        postArea.Click();
+                        Console.WriteLine($"Actions click failed: {ex2.Message}");
+                        try
+                        {
+                            Console.WriteLine("Trying direct click...");
+                            postArea.Click();
+                            Console.WriteLine("Direct click successful");
+                        }
+                        catch (Exception ex3)
+                        {
+                            Console.WriteLine($"All click attempts failed. Last error: {ex3.Message}");
+                            throw;
+                        }
                     }
                 }
 
@@ -736,21 +835,17 @@ namespace FacebookAutoPoster
                 // Find and click the post button using multiple approaches
                 Console.WriteLine("Looking for post button...");
                 IWebElement postButton = null;
-                var buttonSelectors = new[]
-                {
-                    // Non-anonymous post button selectors
-                    "//div[@role='none']//span[contains(text(), 'Post')]",
-                    "//div[contains(@class, 'x1lliihq')]//span[contains(text(), 'Post')]",
-                    "//div[@role='none' and contains(@class, 'x1ja2u2z')]//span[contains(text(), 'Post')]",
-                    "//div[contains(@class, 'x1ja2u2z') and contains(@class, 'x78zum5')]//span[contains(text(), 'Post')]",
-                    // Anonymous post button selectors (keeping existing ones)
-                    "//span[contains(text(), 'Submit')]",
-                    "//div[contains(@class, 'x1lliihq')]//span[contains(text(), 'Submit')]",
-                    "//div[@role='none']//span[contains(text(), 'Submit')]",
-                    "//div[contains(@class, 'x1ja2u2z')]//span[contains(text(), 'Submit')]",
-                    "//div[contains(@class, 'x1lliihq') and contains(@class, 'x6ikm8r')]//span[contains(text(), 'Submit')]"
-                };
+                var buttonSelectors = postData.IsAnonymous ? 
+                    new[] {
+                        // Anonymous post button selector
+                        "//div[@role='none' and contains(@class, 'x1ja2u2z') and contains(@class, 'x78zum5')]//span[contains(@class, 'x1lliihq') and contains(@class, 'x6ikm8r') and contains(text(), 'Submit')]"
+                    } : 
+                    new[] {
+                        // Non-anonymous post button selector
+                        "//div[contains(@class, 'x1ja2u2z') and contains(@class, 'x78zum5')]//span[contains(text(), 'Post')]"
+                    };
 
+                Console.WriteLine($"Looking for {(postData.IsAnonymous ? "Submit" : "Post")} button...");
                 foreach (var selector in buttonSelectors)
                 {
                     try
@@ -758,7 +853,7 @@ namespace FacebookAutoPoster
                         postButton = wait.Until(d => d.FindElement(By.XPath(selector)));
                         if (postButton != null && postButton.Displayed)
                         {
-                            Console.WriteLine($"Found post button using selector: {selector}");
+                            Console.WriteLine($"Found {(postData.IsAnonymous ? "Submit" : "Post")} button using selector: {selector}");
                             break;
                         }
                     }
@@ -807,7 +902,22 @@ namespace FacebookAutoPoster
                 Console.WriteLine($"Waiting {Delays.PostCompleteDelay/1000} seconds before next post...");
                 await Task.Delay(Delays.PostCompleteDelay);
 
-                // Don't close the driver here - we'll keep it open for the next post
+                // Close the current post dialog if it's still open
+                try
+                {
+                    var closeButton = driver.FindElements(By.XPath("//div[@aria-label='Close']"));
+                    if (closeButton.Count > 0 && closeButton[0].Displayed)
+                    {
+                        closeButton[0].Click();
+                        await Task.Delay(2000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error closing post dialog: {ex.Message}");
+                }
+
+                // Don't navigate here - let RunAutoPoster handle the next group navigation
             }
             catch (Exception ex)
             {
@@ -824,7 +934,10 @@ namespace FacebookAutoPoster
                 if (isNewDriver && driver != null)
                 {
                     driver.Quit();
-                    _activeDrivers.Remove(postData.ProfileName);
+                    lock (_driverLock)
+                    {
+                        _activeDrivers.Remove(postData.ProfileName);
+                    }
                 }
             }
         }
@@ -869,55 +982,128 @@ namespace FacebookAutoPoster
                 PrepareHeaderForMatch = args => args.Header.ToLower()
             };
 
-            using (var reader = new StreamReader("posts.csv"))
-            using (var csv = new CsvReader(reader, config))
+            try
             {
-                var records = csv.GetRecords<PostData>().ToList();
-                Console.WriteLine($"Found {records.Count} posts to process");
-
-                // Group records by ProfileName
-                var groupedRecords = records.GroupBy(r => r.ProfileName);
-
-                foreach (var group in groupedRecords)
+                using (var reader = new StreamReader("posts.csv"))
+                using (var csv = new CsvReader(reader, config))
                 {
-                    Console.WriteLine($"\nProcessing posts for profile: {group.Key}");
-                    foreach (var record in group)
+                    var records = csv.GetRecords<PostData>().ToList();
+                    Console.WriteLine($"Found {records.Count} posts to process");
+
+                    // Group records by ProfileName
+                    var groupedRecords = records.GroupBy(r => r.ProfileName);
+
+                    foreach (var group in groupedRecords)
                     {
-                        if (string.IsNullOrWhiteSpace(record.GroupUrl))
-                        {
-                            Console.WriteLine("Skipping record with empty group URL");
-                            await LogPostResult(record, false, "Empty group URL");
-                            continue;
-                        }
+                        Console.WriteLine($"\nProcessing posts for profile: {group.Key}");
+                        ChromeDriver? driver = null;
+                        bool isNewDriver = false;
+                        var groupList = group.ToList();
 
-                        if (!string.IsNullOrWhiteSpace(record.ProfileName))
+                        try
                         {
-                            record.ProfileName = string.Join("_", record.ProfileName.Split(Path.GetInvalidFileNameChars()));
+                            for (int i = 0; i < groupList.Count; i++)
+                            {
+                                var record = groupList[i];
+                                if (string.IsNullOrWhiteSpace(record.GroupUrl))
+                                {
+                                    Console.WriteLine("Skipping record with empty group URL");
+                                    await LogPostResult(record, false, "Empty group URL");
+                                    continue;
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(record.ProfileName))
+                                {
+                                    record.ProfileName = string.Join("_", record.ProfileName.Split(Path.GetInvalidFileNameChars()));
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Skipping record with empty profile name");
+                                    await LogPostResult(record, false, "Empty profile name");
+                                    continue;
+                                }
+
+                                Console.WriteLine($"Processing post for group: {record.GroupUrl}");
+                                
+                                // If this is not the first post, navigate to the next group
+                                if (driver != null && !isNewDriver && i > 0)
+                                {
+                                    var nextGroupUrl = record.GroupUrl;
+                                    Console.WriteLine($"Navigating to next group: {nextGroupUrl}");
+                                    driver.Navigate().GoToUrl(nextGroupUrl);
+                                    Console.WriteLine($"Waiting {Delays.GroupLoadDelay/1000} seconds for group to load...");
+                                    await Task.Delay(Delays.GroupLoadDelay);
+
+                                    // Simulate human-like scrolling and interaction for the new group
+                                    Console.WriteLine("Simulating human-like behavior for new group...");
+                                    try
+                                    {
+                                        var actions = new OpenQA.Selenium.Interactions.Actions(driver);
+                                        // Random initial scroll
+                                        var scrollRandom = new Random();
+                                        var scrollAmount = scrollRandom.Next(300, 800);
+                                        ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, {scrollAmount});");
+                                        await RandomDelay(1000, 2000);
+
+                                        // Scroll up a bit
+                                        scrollAmount = scrollRandom.Next(100, 300);
+                                        ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, -{scrollAmount});");
+                                        await RandomDelay(800, 1500);
+
+                                        // Random mouse movements
+                                        var elements = driver.FindElements(By.CssSelector("div[role='article']"));
+                                        if (elements.Count > 0)
+                                        {
+                                            // Move to a random post
+                                            var randomPost = elements[scrollRandom.Next(0, Math.Min(3, elements.Count))];
+                                            actions.MoveToElement(randomPost).Perform();
+                                            await RandomDelay(500, 1000);
+
+                                            // Move away
+                                            actions.MoveByOffset(scrollRandom.Next(-100, 100), scrollRandom.Next(-100, 100)).Perform();
+                                            await RandomDelay(500, 1000);
+                                        }
+
+                                        // Scroll to top
+                                        ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, 0);");
+                                        await RandomDelay(1000, 2000);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine($"Error during human-like behavior simulation: {ex.Message}");
+                                    }
+                                }
+
+                                await PostToFacebook(record);
+                                
+                                var random = new Random();
+                                var delay = random.Next(Delays.BetweenPostsMin, Delays.BetweenPostsMax);
+                                Console.WriteLine($"Waiting {delay/1000} seconds before next post...");
+                                await Task.Delay(delay);
+                            }
                         }
-                        else
+                        finally
                         {
-                            Console.WriteLine("Skipping record with empty profile name");
-                            await LogPostResult(record, false, "Empty profile name");
-                            continue;
+                            if (driver != null)
+                            {
+                                try
+                                {
+                                    Console.WriteLine("Closing Chrome instance...");
+                                    driver.Quit();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error closing Chrome instance: {ex.Message}");
+                                }
+                            }
                         }
-
-                        Console.WriteLine($"Processing post for group: {record.GroupUrl}");
-                        await PostToFacebook(record);
-                        
-                        var random = new Random();
-                        var delay = random.Next(Delays.BetweenPostsMin, Delays.BetweenPostsMax);
-                        Console.WriteLine($"Waiting {delay/1000} seconds before next post...");
-                        await Task.Delay(delay);
-                    }
-
-                    // Close the driver after all posts for this profile are done
-                    if (_activeDrivers.TryGetValue(group.Key, out var driver))
-                    {
-                        Console.WriteLine($"Closing browser for profile: {group.Key}");
-                        driver.Quit();
-                        _activeDrivers.Remove(group.Key);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in RunAutoPoster: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
             }
 
             Console.WriteLine($"\nAuto poster completed at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
