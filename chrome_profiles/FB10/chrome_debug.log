@@ -1,0 +1,4 @@
+[18421:723408:0601/011634.209448:INFO:components/enterprise/browser/controller/chrome_browser_cloud_management_controller.cc:202] No machine level policy manager exists.
+[18421:723408:0601/011634.285060:WARNING:chrome/browser/extensions/extension_service.cc:359] --load-extension is not allowed in Google Chrome, ignoring.
+[18421:723452:0601/011638.211708:WARNING:net/dns/dns_config_service_posix.cc:201] Failed to read DnsConfig.
+[18428:723516:0601/011638.211723:WARNING:net/dns/dns_config_service_posix.cc:201] Failed to read DnsConfig.

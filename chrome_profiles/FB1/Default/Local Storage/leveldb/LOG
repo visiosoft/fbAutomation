@@ -1,0 +1,13 @@
+2025/06/01-11:41:52.090 1609b Reusing MANIFEST /Users/toheedali/fbAutomation/chrome_profiles/FB1/Default/Local Storage/leveldb/MANIFEST-000001
+2025/06/01-11:41:52.098 1609b Recovering log #8
+2025/06/01-11:41:52.098 1609b Level-0 table #11: started
+2025/06/01-11:41:52.105 1609b Level-0 table #11: 18330 bytes OK
+2025/06/01-11:41:52.108 1609b Delete type=0 #8
+2025/06/01-11:41:52.115 1609d Compacting 4@0 + 0@1 files
+2025/06/01-11:41:52.118 1609d Generated table #13@0: 38 keys, 10420 bytes
+2025/06/01-11:41:52.119 1609d Compacted 4@0 + 0@1 files => 10420 bytes
+2025/06/01-11:41:52.120 1609d compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/06/01-11:41:52.121 1609d Delete type=2 #3
+2025/06/01-11:41:52.121 1609d Delete type=2 #6
+2025/06/01-11:41:52.121 1609d Delete type=2 #11
+2025/06/01-11:41:52.121 1609d Delete type=2 #9

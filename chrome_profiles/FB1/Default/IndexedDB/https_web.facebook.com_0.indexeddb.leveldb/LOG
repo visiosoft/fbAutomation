@@ -1,0 +1,6 @@
+2025/05/27-11:54:44.965 4e57a Creating DB /Users/toheedali/fbAutomation/chrome_profiles/FB1/Default/IndexedDB/https_web.facebook.com_0.indexeddb.leveldb since it was missing.
+2025/05/27-11:54:44.970 4e57a Reusing MANIFEST /Users/toheedali/fbAutomation/chrome_profiles/FB1/Default/IndexedDB/https_web.facebook.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/05/27-11:54:48.974 4e57a Level-0 table #5: started
+2025/05/27-11:54:48.976 4e57a Level-0 table #5: 24672 bytes OK
+2025/05/27-11:54:48.977 4e57a Delete type=0 #3
+2025/05/27-11:54:48.977 4e57a Manual compaction at level-0 from '\x00\x0a\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x0b\x00\x00\x00' @ 0 : 0; will stop at (end)

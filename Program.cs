@@ -47,7 +47,7 @@ namespace FacebookAutoPoster
             public static readonly int InitialDelayMin = 1000;   // 1 second
             public static readonly int InitialDelayMax = 2000;   // 2 seconds
             public static readonly int LoginDelayMin = 500;      // 0.5 seconds
-            public static readonly int LoginDelayMax = 1000;     // 1 second
+            public static readonly int LoginDelayMax = 5000;     // 1 second
             public static readonly int PostLoginDelay = 5000;    // 5 seconds
             public static readonly int GroupLoadDelay = 5000;    // 5 seconds
             public static readonly int ClickDelayMin = 1000;     // 1 second
@@ -263,36 +263,13 @@ namespace FacebookAutoPoster
                         }
                     }
                     
-                    // Add user data directory for persistent login using profile name
-                    var baseProfileDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ChromeProfiles");
-                    if (!Directory.Exists(baseProfileDir))
-                    {
-                        Directory.CreateDirectory(baseProfileDir);
-                    }
-                    
-                    var userDataDir = Path.Combine(baseProfileDir, postData.ProfileName);
-                    if (!Directory.Exists(userDataDir))
-                    {
-                        Directory.CreateDirectory(userDataDir);
-                    }
+                    // Add unique user data directory for each profile
+                    var userDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), 
+                        "fbAutomation", "chrome_profiles", postData.ProfileName);
+                    Directory.CreateDirectory(userDataDir);
                     options.AddArgument($"--user-data-dir={userDataDir}");
-                    options.AddArgument($"--profile-directory=Default");
                     
-                    // Enhanced anti-detection measures
-                    options.AddArgument("--disable-blink-features=AutomationControlled");
-                    options.AddArgument("--disable-notifications");
-                    options.AddArgument("--disable-popup-blocking");
-                    options.AddArgument("--disable-infobars");
-                    options.AddArgument("--disable-extensions");
-                    options.AddArgument("--disable-gpu");
-                    options.AddArgument("--no-sandbox");
-                    options.AddArgument("--disable-dev-shm-usage");
-                    options.AddArgument("--start-maximized");
-                    options.AddArgument("--disable-web-security");
-                    options.AddArgument("--allow-running-insecure-content");
-                    options.AddArgument("--disable-features=IsolateOrigins,site-per-process");
-                    
-                    // Randomize user agent
+                    // Add user agent
                     var userAgents = new[]
                     {
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",

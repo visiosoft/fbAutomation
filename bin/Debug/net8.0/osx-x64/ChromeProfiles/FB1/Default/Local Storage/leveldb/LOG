@@ -1,0 +1,5 @@
+2025/05/26-06:22:36.602 104e9 Reusing MANIFEST /Users/toheedali/fbAutomation/bin/Debug/net8.0/osx-x64/ChromeProfiles/FB1/Default/Local Storage/leveldb/MANIFEST-000001
+2025/05/26-06:22:36.610 104e9 Recovering log #3
+2025/05/26-06:22:36.610 104e9 Level-0 table #3: started
+2025/05/26-06:22:36.616 104e9 Level-0 table #3: 26828 bytes OK
+2025/05/26-06:22:36.620 104e9 Delete type=0 #3

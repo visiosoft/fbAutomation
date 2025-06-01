@@ -1,0 +1,26 @@
+[18314:721031:0601/005834.973894:INFO:components/enterprise/browser/controller/chrome_browser_cloud_management_controller.cc:202] No machine level policy manager exists.
+[18314:721031:0601/005835.040546:WARNING:chrome/browser/extensions/extension_service.cc:359] --load-extension is not allowed in Google Chrome, ignoring.
+[18314:721031:0601/005840.383758:INFO:CONSOLE:250] "
+%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005840.383857:INFO:CONSOLE:250] "
+%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005840.383882:INFO:CONSOLE:250] "
+%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005840.383900:INFO:CONSOLE:250] "
+%c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005849.445033:INFO:CONSOLE:250] "
+%cStop! font-family:helvetica; font-size:20px; font-size:50px; font-weight:bold; color:red; -webkit-text-stroke:1px black;", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005849.445137:INFO:CONSOLE:250] "
+%cThis is a browser feature intended for developers. If someone told you to copy-paste something here to enable a Facebook feature or "hack" someone's account, it is a scam and will give them access to your Facebook account. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005849.445271:INFO:CONSOLE:250] "
+%cSee https://www.facebook.com/selfxss for more information. font-family:helvetica; font-size:20px; ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005849.445315:INFO:CONSOLE:250] "
+%c ", source: https://static.xx.fbcdn.net/rsrc.php/v4/yu/r/Ae7QrCYDp6C.js (250)
+[18314:721031:0601/005851.856414:INFO:CONSOLE:20] "ErrorUtils caught an error:
+
+Error performing FTS transaction
+
+Subsequent non-fatal errors won't be logged; see https://fburl.com/debugjs. [object Object]", source: https://static.xx.fbcdn.net/rsrc.php/v4/yW/r/XLyi___AlRX.js (20)
+[18320:721212:0601/005901.144046:WARNING:ui/gl/angle_platform_impl.cc:54] SizedMRUCache.h:150 (TrimCache): Overflowed the metal library cache limit of 64 elements, removing the least recently used to make room.
+[18321:721153:0601/005950.238737:WARNING:net/extras/sqlite/sqlite_persistent_store_backend_base.cc:176] Failed to post task from FlushAndNotifyInBackground@net/extras/sqlite/sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
+[18321:721153:0601/005950.239392:WARNING:net/extras/sqlite/sqlite_persistent_store_backend_base.cc:176] Failed to post task from FlushAndNotifyInBackground@net/extras/sqlite/sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
