@@ -702,8 +702,8 @@ namespace FacebookAutoPoster
                 IWebElement postInput = null;
                 var inputSelectors = new[]
                 {
-                    "//p[@class='xdj266r x11i5rnm xat24cr x1mh8g0r x16tdsg8']",
-                    "//p[contains(@class, 'xdj266r') and contains(@class, 'x11i5rnm') and contains(@class, 'xat24cr')]",
+                    "//p[@class='xdj266r x14z9mp xat24cr x1lziwak x16tdsg8']",
+                    "//p[contains(@class, 'xdj266r') and contains(@class, 'x14z9mp') and contains(@class, 'xat24cr')]",
                     "//div[@contenteditable='true']//p[contains(@class, 'xdj266r')]",
                     "//div[@role='textbox']//p[contains(@class, 'xdj266r')]",
                     "//div[contains(@class, 'notranslate')]//p[contains(@class, 'xdj266r')]"
