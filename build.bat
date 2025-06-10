@@ -79,8 +79,9 @@ if not exist "%RELEASE_DIR%\FacebookAutoPoster.exe" (
 
 REM Create sample files
 echo Creating sample configuration files...
-echo ProfileName,Username,Password,GroupUrl,PostText,IsAnonymous,ClosePreview > "%RELEASE_DIR%\posts.csv"
-echo profile1,username1,password1,https://facebook.com/groups/group1,Your post text here,false,false >> "%RELEASE_DIR%\posts.csv"
+mkdir "%RELEASE_DIR%\data"
+echo ProfileName,Username,Password,GroupUrl,PostText,IsAnonymous,ClosePreview > "%RELEASE_DIR%\data\posts.csv"
+echo profile1,username1,password1,https://facebook.com/groups/group1,Your post text here,false,false >> "%RELEASE_DIR%\data\posts.csv"
 
 echo # Format: account:host:port or account:host:port:username:password > "%RELEASE_DIR%\proxies.txt"
 echo profile1:proxy1.example.com:8080 >> "%RELEASE_DIR%\proxies.txt"

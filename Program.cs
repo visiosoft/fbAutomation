@@ -307,7 +307,16 @@ namespace FacebookAutoPoster
                     // Essential anti-detection options
                     options.AddArgument("--disable-blink-features=AutomationControlled");
                     options.AddArgument("--disable-notifications");
-                    options.AddArgument("--start-maximized");
+                    
+                    // Set window size and position based on profile index
+                    var profileIndex = _activeDrivers.Count;
+                    var windowWidth = 800;
+                    var windowHeight = 600;
+                    var windowX = (profileIndex * 50) % 1920; // Cascade windows horizontally
+                    var windowY = (profileIndex * 50) % 1080; // Cascade windows vertically
+                    
+                    options.AddArgument($"--window-size={windowWidth},{windowHeight}");
+                    options.AddArgument($"--window-position={windowX},{windowY}");
                     
                     // Add remote debugging port
                     var debugPort = new Random().Next(9222, 9999);
@@ -984,7 +993,13 @@ namespace FacebookAutoPoster
 
             try
             {
-                using (var reader = new StreamReader("posts.csv"))
+                var csvPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "posts.csv");
+                if (!File.Exists(csvPath))
+                {
+                    throw new FileNotFoundException($"Posts file not found at: {csvPath}");
+                }
+
+                using (var reader = new StreamReader(csvPath))
                 using (var csv = new CsvReader(reader, config))
                 {
                     var records = csv.GetRecords<PostData>().ToList();
@@ -993,111 +1008,123 @@ namespace FacebookAutoPoster
                     // Group records by ProfileName
                     var groupedRecords = records.GroupBy(r => r.ProfileName);
 
+                    // Create a list to hold all profile tasks
+                    var profileTasks = new List<Task>();
+
                     foreach (var group in groupedRecords)
                     {
-                        Console.WriteLine($"\nProcessing posts for profile: {group.Key}");
-                        ChromeDriver? driver = null;
-                        bool isNewDriver = false;
                         var groupList = group.ToList();
-
-                        try
+                        // Create a task for each profile
+                        var profileTask = Task.Run(async () =>
                         {
-                            for (int i = 0; i < groupList.Count; i++)
+                            Console.WriteLine($"\nStarting parallel processing for profile: {group.Key}");
+                            ChromeDriver? driver = null;
+                            bool isNewDriver = false;
+
+                            try
                             {
-                                var record = groupList[i];
-                                if (string.IsNullOrWhiteSpace(record.GroupUrl))
+                                for (int i = 0; i < groupList.Count; i++)
                                 {
-                                    Console.WriteLine("Skipping record with empty group URL");
-                                    await LogPostResult(record, false, "Empty group URL");
-                                    continue;
-                                }
+                                    var record = groupList[i];
+                                    if (string.IsNullOrWhiteSpace(record.GroupUrl))
+                                    {
+                                        Console.WriteLine($"Profile {group.Key}: Skipping record with empty group URL");
+                                        await LogPostResult(record, false, "Empty group URL");
+                                        continue;
+                                    }
 
-                                if (!string.IsNullOrWhiteSpace(record.ProfileName))
-                                {
-                                    record.ProfileName = string.Join("_", record.ProfileName.Split(Path.GetInvalidFileNameChars()));
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Skipping record with empty profile name");
-                                    await LogPostResult(record, false, "Empty profile name");
-                                    continue;
-                                }
+                                    if (!string.IsNullOrWhiteSpace(record.ProfileName))
+                                    {
+                                        record.ProfileName = string.Join("_", record.ProfileName.Split(Path.GetInvalidFileNameChars()));
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Profile {group.Key}: Skipping record with empty profile name");
+                                        await LogPostResult(record, false, "Empty profile name");
+                                        continue;
+                                    }
 
-                                Console.WriteLine($"Processing post for group: {record.GroupUrl}");
-                                
-                                // If this is not the first post, navigate to the next group
-                                if (driver != null && !isNewDriver && i > 0)
-                                {
-                                    var nextGroupUrl = record.GroupUrl;
-                                    Console.WriteLine($"Navigating to next group: {nextGroupUrl}");
-                                    driver.Navigate().GoToUrl(nextGroupUrl);
-                                    Console.WriteLine($"Waiting {Delays.GroupLoadDelay/1000} seconds for group to load...");
-                                    await Task.Delay(Delays.GroupLoadDelay);
+                                    Console.WriteLine($"Profile {group.Key}: Processing post for group: {record.GroupUrl}");
+                                    
+                                    // If this is not the first post, navigate to the next group
+                                    if (driver != null && !isNewDriver && i > 0)
+                                    {
+                                        var nextGroupUrl = record.GroupUrl;
+                                        Console.WriteLine($"Profile {group.Key}: Navigating to next group: {nextGroupUrl}");
+                                        driver.Navigate().GoToUrl(nextGroupUrl);
+                                        Console.WriteLine($"Profile {group.Key}: Waiting {Delays.GroupLoadDelay/1000} seconds for group to load...");
+                                        await Task.Delay(Delays.GroupLoadDelay);
 
-                                    // Simulate human-like scrolling and interaction for the new group
-                                    Console.WriteLine("Simulating human-like behavior for new group...");
+                                        // Simulate human-like scrolling and interaction for the new group
+                                        Console.WriteLine($"Profile {group.Key}: Simulating human-like behavior for new group...");
+                                        try
+                                        {
+                                            var actions = new OpenQA.Selenium.Interactions.Actions(driver);
+                                            // Random initial scroll
+                                            var scrollRandom = new Random();
+                                            var scrollAmount = scrollRandom.Next(300, 800);
+                                            ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, {scrollAmount});");
+                                            await RandomDelay(1000, 2000);
+
+                                            // Scroll up a bit
+                                            scrollAmount = scrollRandom.Next(100, 300);
+                                            ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, -{scrollAmount});");
+                                            await RandomDelay(800, 1500);
+
+                                            // Random mouse movements
+                                            var elements = driver.FindElements(By.CssSelector("div[role='article']"));
+                                            if (elements.Count > 0)
+                                            {
+                                                // Move to a random post
+                                                var randomPost = elements[scrollRandom.Next(0, Math.Min(3, elements.Count))];
+                                                actions.MoveToElement(randomPost).Perform();
+                                                await RandomDelay(500, 1000);
+
+                                                // Move away
+                                                actions.MoveByOffset(scrollRandom.Next(-100, 100), scrollRandom.Next(-100, 100)).Perform();
+                                                await RandomDelay(500, 1000);
+                                            }
+
+                                            // Scroll to top
+                                            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, 0);");
+                                            await RandomDelay(1000, 2000);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine($"Profile {group.Key}: Error during human-like behavior simulation: {ex.Message}");
+                                        }
+                                    }
+
+                                    await PostToFacebook(record);
+                                    
+                                    var random = new Random();
+                                    var delay = random.Next(Delays.BetweenPostsMin, Delays.BetweenPostsMax);
+                                    Console.WriteLine($"Profile {group.Key}: Waiting {delay/1000} seconds before next post...");
+                                    await Task.Delay(delay);
+                                }
+                            }
+                            finally
+                            {
+                                if (driver != null)
+                                {
                                     try
                                     {
-                                        var actions = new OpenQA.Selenium.Interactions.Actions(driver);
-                                        // Random initial scroll
-                                        var scrollRandom = new Random();
-                                        var scrollAmount = scrollRandom.Next(300, 800);
-                                        ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, {scrollAmount});");
-                                        await RandomDelay(1000, 2000);
-
-                                        // Scroll up a bit
-                                        scrollAmount = scrollRandom.Next(100, 300);
-                                        ((IJavaScriptExecutor)driver).ExecuteScript($"window.scrollBy(0, -{scrollAmount});");
-                                        await RandomDelay(800, 1500);
-
-                                        // Random mouse movements
-                                        var elements = driver.FindElements(By.CssSelector("div[role='article']"));
-                                        if (elements.Count > 0)
-                                        {
-                                            // Move to a random post
-                                            var randomPost = elements[scrollRandom.Next(0, Math.Min(3, elements.Count))];
-                                            actions.MoveToElement(randomPost).Perform();
-                                            await RandomDelay(500, 1000);
-
-                                            // Move away
-                                            actions.MoveByOffset(scrollRandom.Next(-100, 100), scrollRandom.Next(-100, 100)).Perform();
-                                            await RandomDelay(500, 1000);
-                                        }
-
-                                        // Scroll to top
-                                        ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, 0);");
-                                        await RandomDelay(1000, 2000);
+                                        Console.WriteLine($"Profile {group.Key}: Closing Chrome instance...");
+                                        driver.Quit();
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine($"Error during human-like behavior simulation: {ex.Message}");
+                                        Console.WriteLine($"Profile {group.Key}: Error closing Chrome instance: {ex.Message}");
                                     }
                                 }
+                            }
+                        });
 
-                                await PostToFacebook(record);
-                                
-                                var random = new Random();
-                                var delay = random.Next(Delays.BetweenPostsMin, Delays.BetweenPostsMax);
-                                Console.WriteLine($"Waiting {delay/1000} seconds before next post...");
-                                await Task.Delay(delay);
-                            }
-                        }
-                        finally
-                        {
-                            if (driver != null)
-                            {
-                                try
-                                {
-                                    Console.WriteLine("Closing Chrome instance...");
-                                    driver.Quit();
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine($"Error closing Chrome instance: {ex.Message}");
-                                }
-                            }
-                        }
+                        profileTasks.Add(profileTask);
                     }
+
+                    // Wait for all profile tasks to complete
+                    await Task.WhenAll(profileTasks);
                 }
             }
             catch (Exception ex)
