@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacebookAutoPoster", "FacebookAutoPoster.csproj", "{CBDCCF53-E37F-52CB-E1B5-AEE4ED35416B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBDCCF53-E37F-52CB-E1B5-AEE4ED35416B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBDCCF53-E37F-52CB-E1B5-AEE4ED35416B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBDCCF53-E37F-52CB-E1B5-AEE4ED35416B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBDCCF53-E37F-52CB-E1B5-AEE4ED35416B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {44DF5B88-C2A0-42FB-9DF5-F9A50D6375D4}
+	EndGlobalSection
+EndGlobal
